@@ -1,16 +1,5 @@
 <h1>Posts Page</h1>
 
-<ng-template #loading>Loading...</ng-template>
-
-<div *ngIf="combineObs$ | async as combineObs; else loading">
-  <div>
-    <div *ngFor="let post of combineObs.posts">
-      {{ post.title }}
-    </div>
-  </div>
-  <div>{{ combineObs.users[0].name }}</div>
-</div>
-
 <div *ngIf="users$ | async as users">{{ users[0].name }}</div>
 
 <div *ngFor="let post of posts$ | async">

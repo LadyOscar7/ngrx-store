@@ -1,26 +1,29 @@
-import { Component } from '@angular/core';
-import { combineLatest, map, tap } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { PostsService } from './services/post.service';
+import { PostInterface } from './interfaces/post.interface';
+import { Store, select } from '@ngrx/store';
+import { AppStateInterface } from '../state/app-state.interface';
+import { postsSelector } from './store/selectors';
+import * as PostsActions from '../posts/store/actions';
 
 @Component({
   selector: 'app-posts',
   templateUrl: './posts.component.html',
 })
-export class PostsComponent {
-  public posts$ = this.postService
-    .getPosts()
-    .pipe(tap((posts) => console.log('Posts: ', posts)));
+export class PostsComponent implements OnInit {
+  public posts$: Observable<PostInterface[]>;
 
   public users$ = this.postService.getUsers();
 
-  public combineObs$ = combineLatest([this.posts$, this.users$]).pipe(
-    map(([posts, users]) => {
-      return {
-        posts: posts,
-        users: users,
-      };
-    })
-  );
+  constructor(
+    private store: Store<AppStateInterface>,
+    private postService: PostsService
+  ) {
+    this.posts$ = this.store.pipe(select(postsSelector));
+  }
 
-  constructor(private postService: PostsService) {}
+  ngOnInit(): void {
+    this.store.dispatch(PostsActions.getPosts());
+  }
 }
